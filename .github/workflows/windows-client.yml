@@ -53,8 +53,12 @@ jobs:
             zip
 
       - name: Install pinned Tauri CLI dependencies with npm ci
+        id: npm-install
         shell: pwsh
         run: |
+          $nodePath = (Get-Command node).Source
+          $nodeHome = Split-Path -Parent $nodePath
+          "node_home=$nodeHome" >> $env:GITHUB_OUTPUT
           $project = Join-Path $env:GITHUB_WORKSPACE "${{ steps.locate.outputs.project_root }}"
           Push-Location (Join-Path $project "client-app")
           npm ci --no-audit --no-fund
@@ -65,6 +69,7 @@ jobs:
         shell: msys2 {0}
         env:
           SERVER_URL: ${{ inputs.server_url }}
+          NODE_HOME: ${{ steps.npm-install.outputs.node_home }}
           SKIP_NPM_CI: "1"
           CARGO_TARGET_X86_64_PC_WINDOWS_MSVC_LINKER: link.exe
         run: |
@@ -74,7 +79,10 @@ jobs:
           else
             CARGO_HOME_POSIX="$HOME/.cargo"
           fi
-          export PATH="$CARGO_HOME_POSIX/bin:$PATH"
+          NODE_HOME_POSIX="$(cygpath -u "$NODE_HOME")"
+          export PATH="$NODE_HOME_POSIX:$CARGO_HOME_POSIX/bin:$PATH"
+          command -v node
+          node --version
           command -v cargo
           cargo --version
           ./build-client

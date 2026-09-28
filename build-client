@@ -36,7 +36,7 @@ curl --fail --location --silent --show-error 'https://go.microsoft.com/fwlink/p/
 if [[ "${SKIP_NPM_CI:-0}" != "1" ]]; then
   (cd "$ROOT/client-app" && npm ci --no-audit --no-fund)
 fi
-(cd "$ROOT/client-app" && npm run tauri -- build --no-bundle --target x86_64-pc-windows-msvc)
+(cd "$ROOT/client-app" && node ./node_modules/@tauri-apps/cli/tauri.js build --no-bundle --target x86_64-pc-windows-msvc)
 LAUNCHER="$ROOT/client-app/src-tauri/target/x86_64-pc-windows-msvc/release/Sentinel.exe"
 test -f "$LAUNCHER" || { echo 'Tauri did not produce Sentinel.exe.' >&2; exit 1; }
 mkdir -p "$CLIENT/GUI" "$CLIENT/runtime"
