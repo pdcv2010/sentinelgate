@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SentinelGate</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="sg-aurora" aria-hidden="true"><span></span><span></span><span></span></div>
+    <div id="appCustomBackground" class="app-custom-background hidden" aria-hidden="true">
+        <img id="appCustomBackgroundImage" alt="">
+        <video id="appCustomBackgroundVideo" autoplay muted loop playsinline preload="metadata"></video>
+    </div>
+    <div id="appCustomBackgroundOverlay" class="app-custom-background-overlay hidden" aria-hidden="true"></div>
+
+    <svg class="icon-sprite" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
+        <symbol id="icon-shield-check" viewBox="0 0 24 24"><path d="M12 3 20 6v5c0 4.6-3.1 7.8-8 9.6C7.1 18.8 4 15.6 4 11V6l8-3Z"/><path d="m8.5 12 2.2 2.2 4.8-5"/></symbol>
+        <symbol id="icon-vault" viewBox="0 0 24 24"><path d="M3 7h7l2 2h9v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7Z"/><path d="M3 10h18M10 14h4"/></symbol>
+        <symbol id="icon-history" viewBox="0 0 24 24"><path d="M4 5v5h5M5.2 9A8 8 0 1 1 4 14"/><path d="M12 7v5l3 2"/></symbol>
+    </svg>
+
+    <div class="splash" id="splash">
+        <img src="assets/logo.png" class="logo" alt="">
+
+        <div class="loader">
+            <div class="loader-bar"></div>
+        </div>
+    </div>
+
+    <div class="app-notice hidden" id="appNotice" role="status" aria-live="polite"><span class="app-notice-mark" aria-hidden="true"></span><span id="appNoticeMessage"></span><button type="button" id="dismissAppNotice" aria-label="Đóng thông báo">×</button></div>
+
+    <main class="app hidden" id="app">
+
+        <div class="auth-stage" id="authStage">
+
+            <section class="auth-page" id="loginPage">
+                <div class="auth-container" id="authContainer">
+                    <section class="welcome-panel" aria-live="polite">
+                        <div class="welcome-copy welcome-login">
+                            <h1>Xin chào!</h1>
+                            <p>Chưa có tài khoản?</p>
+                            <button type="button" class="welcome-button" id="registerButton">Đăng ký</button>
+                        </div>
+
+                        <div class="welcome-copy welcome-register">
+                            <h1>Chào mừng bạn trở lại!</h1>
+                            <p>Đã có tài khoản?</p>
+                            <button type="button" class="welcome-button" data-back-login>Đăng nhập</button>
+                        </div>
+
+                        <div class="welcome-copy welcome-recovery">
+                            <h1>Bạn cần trợ giúp đăng nhập?</h1>
+                            <p>Quay lại đăng nhập vào tài khoản.</p>
+                            <button type="button" class="welcome-button" id="backFromForgot">← Quay lại đăng nhập</button>
+                        </div>
+                    </section>
+
+                    <section class="forms-panel" aria-label="Biểu mẫu tài khoản">
+                        <div class="form-view login-form-view">
+                            <form class="auth-form" id="loginForm">
+                                <h2>ĐĂNG NHẬP</h2>
+
+                                <input type="text" id="loginUsername" placeholder="Tên người dùng (không bắt buộc)" autocomplete="username">
+                                <input type="text" id="loginEmail" placeholder="Email / Số điện thoại" autocomplete="email" required>
+                                <input type="password" id="loginPassword" placeholder="Mật khẩu" autocomplete="current-password" required>
+
+                                <button type="button" class="text-link forgot-link" id="forgotButton">Quên mật khẩu?</button>
+                                <button type="submit" class="primary-button">Đăng nhập</button>
+
+                                <p class="social-label">hoặc đăng nhập bằng mạng xã hội</p>
+                                <div class="social-platforms" aria-label="Mạng xã hội">
+                                    <button type="button" class="social-button" aria-label="Tiếp tục với Google">G</button>
+                                    <button type="button" class="social-button social-facebook" aria-label="Tiếp tục với Facebook">f</button>
+                                    <button type="button" class="social-button" aria-label="Tiếp tục với X">𝕏</button>
+                                    <button type="button" class="social-button social-linkedin" aria-label="Tiếp tục với LinkedIn">in</button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <div class="form-view register-form-view" id="registerPage">
+                            <form class="auth-form" id="registerForm">
+                                <h2>ĐĂNG KÝ</h2>
+                                <p class="form-subtitle">Tạo tài khoản an toàn của bạn.</p>
+
+                                <input type="text" id="registerUsername" placeholder="Tên người dùng" autocomplete="username" required>
+                                <input type="text" id="registerEmail" placeholder="Email / Số điện thoại" autocomplete="email" required>
+                                <input type="password" id="registerPassword" placeholder="Mật khẩu" autocomplete="new-password" required>
+                                <input type="password" id="registerConfirm" placeholder="Xác nhận mật khẩu" autocomplete="new-password" required>
+
+                                <label class="terms">
+                                    <input type="checkbox" required>
+                                    <span>Tôi đồng ý với Điều khoản sử dụng và Chính sách quyền riêng tư.</span>
+                                </label>
+
+                                <button type="submit" class="primary-button">Đăng ký</button>
+
+                                <div class="register-footer">
+                                    <span>Đã có tài khoản?
+                                        <button type="button" class="text-link" id="backLoginButton">Đăng nhập.</button>
+                                    </span>
+                                </div>
+                            </form>
+                        </div>
+
+                        <div class="form-view recovery-form-view" id="forgotPage">
+                            <form class="auth-form" id="forgotForm">
+                                <h2>Quên mật khẩu?</h2>
+                                <p class="form-subtitle">Đừng lo. Chúng tôi sẽ giúp bạn truy cập lại tài khoản.</p>
+                                <input type="text" id="forgotEmail" placeholder="Email / Số điện thoại" autocomplete="email" required>
+                                <button type="submit" class="primary-button">Tiếp tục</button>
+                            </form>
+                        </div>
+
+                        <div class="form-view recovery-form-view" id="otpPage">
+                            <div class="auth-form recovery-content">
+                                <h2>Nhập mã xác minh</h2>
+                                <p class="form-subtitle">Nhập mã 6 chữ số đã gửi đến email đăng ký.</p>
+                                <div class="otp-container" aria-label="Mã xác minh">
+                                    <input maxlength="1" class="otp" inputmode="numeric" aria-label="Chữ số 1">
+                                    <input maxlength="1" class="otp" inputmode="numeric" aria-label="Chữ số 2">
+                                    <input maxlength="1" class="otp" inputmode="numeric" aria-label="Chữ số 3">
+                                    <input maxlength="1" class="otp" inputmode="numeric" aria-label="Chữ số 4">
+                                    <input maxlength="1" class="otp" inputmode="numeric" aria-label="Chữ số 5">
+                                    <input maxlength="1" class="otp" inputmode="numeric" aria-label="Chữ số 6">
+                                </div>
+                                <div class="otp-links">
+                                    <button type="button" class="text-link" id="resendCode">Gửi lại mã.</button>
+                                    <button type="button" class="text-link" id="changeEmail">Đổi email.</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-view recovery-form-view" id="newPasswordPage">
+                            <form class="auth-form" id="newPasswordForm">
+                                <h2>Tạo mật khẩu mới</h2>
+                                <input type="password" id="newPassword" placeholder="Mật khẩu mới" autocomplete="new-password" required>
+                                <input type="password" id="confirmNewPassword" placeholder="Xác nhận mật khẩu mới" autocomplete="new-password" required>
+                                <div class="password-strength">
+                                    <div class="strength-bar"></div>
+                                </div>
+                                <div class="password-rules">
+                                    <span>Độ mạnh mật khẩu</span>
+                                    <span>✓ Tối thiểu 8 ký tự.</span>
+                                    <span>✓ Ít nhất một chữ số.</span>
+                                    <span>✓ Ít nhất một ký tự đặc biệt.</span>
+                                </div>
+                                <button type="submit" class="primary-button">Tiếp tục</button>
+                            </form>
+                        </div>
+
+                        <div class="form-view recovery-form-view" id="successPage">
+                            <div class="auth-form recovery-content success-content">
+                                <h2>Đổi mật khẩu thành công!</h2>
+                                <p class="form-subtitle">Mật khẩu mới đã có hiệu lực. Hãy dùng mật khẩu này cho những lần đăng nhập sau.</p>
+                                <button type="button" class="primary-button" id="successLoginButton">Đăng nhập</button>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </section>
+            </div>
+
+
+        <section class="home-page hidden" id="homePage" aria-label="Trang chủ SentinelGate">
+            <header class="home-header">
+                <a class="brand-lockup" href="#home" aria-label="SentinelGate trang chủ"><img src="assets/logo.png" alt="" class="brand-logo"><span>Sentinel<span>Gate</span><small>KHÔNG GIAN TỆP AN TOÀN</small></span></a>
+                <div class="home-header-right"><div class="account-chip"><span class="avatar">SG</span><span><strong id="accountUsername">Tài khoản</strong><small id="accountStatus">Đang kiểm tra phiên</small></span></div><div class="window-controls" aria-label="Điều khiển cửa sổ"><button type="button" aria-label="Thu nhỏ">−</button><button type="button" aria-label="Phóng to">□</button><button type="button" aria-label="Đóng">×</button></div></div>
+            </header>
+            <main class="home-content tab-view is-active" data-home-tab="Trang chủ">
+                <section class="home-welcome"><div><p class="welcome-kicker"><i></i> KHÔNG GIAN CỦA BẠN</p><h1>Chào mừng, <span id="homeGreetingName">bạn</span></h1><p>Quản lý trạng thái bảo vệ và dữ liệu của tài khoản bạn.</p></div><div class="welcome-date"><span class="date-spark">✦</span><span><time id="homeDateValue">—</time><small id="homeSystemStatus">Đang kiểm tra dịch vụ</small></span></div></section>
+                <section class="feature-grid" aria-label="Chức năng chính">
+                    <button class="feature-card feature-protect" type="button" data-nav-target="Bảo vệ dữ liệu"><span class="feature-icon sentinel-feature"><img src="assets/logo.png" alt=""></span><span class="feature-arrow">↗</span><span class="feature-copy"><small>BẢO VỆ TOÀN DIỆN</small><strong>Bảo vệ dữ liệu</strong><span>Mã hóa, bảo vệ và khôi phục tệp của bạn.</span></span><span class="feature-meta" id="protectionFeatureStat"><i></i>0 tệp đã bảo vệ</span></button>
+                    <button class="feature-card feature-vault" type="button" data-nav-target="Kho dữ liệu"><span class="feature-icon"><svg viewBox="0 0 24 24"><use href="#icon-vault"/></svg></span><span class="feature-arrow">↗</span><span class="feature-copy"><small>LƯU TRỮ AN TOÀN</small><strong>Kho dữ liệu</strong><span>Tất cả tệp được bảo vệ, gọn trong một nơi.</span></span><span class="feature-meta" id="vaultFeatureStat">0 tệp đã bảo vệ</span></button>
+                    <button class="feature-card feature-history" type="button" data-nav-target="Lịch sử"><span class="feature-icon"><svg viewBox="0 0 24 24"><use href="#icon-history"/></svg></span><span class="feature-arrow">↗</span><span class="feature-copy"><small>THEO DÕI HOẠT ĐỘNG</small><strong>Lịch sử</strong><span>Xem lại các thay đổi và thao tác gần đây.</span></span><span class="feature-meta" id="historyFeatureStat">Chưa có hoạt động</span></button>
+                    <button class="feature-card feature-transfer" type="button" data-nav-target="Giới thiệu"><span class="feature-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg></span><span class="feature-arrow">↗</span><span class="feature-copy"><small>SENTINELGATE</small><strong>Giới thiệu</strong><span>Tìm hiểu về SentinelGate và không gian bảo mật của bạn.</span></span><span class="feature-meta">Khám phá nền tảng</span></button>
+                </section>
+                <section class="account-summary" aria-label="Thông tin tài khoản"><div class="summary-heading"><span class="summary-mark"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c.8-3.4 3.1-5 7-5s6.2 1.6 7 5"/></svg></span><span><small id="summaryJoinDate">THÔNG TIN CỦA BẠN</small><h2>Thông tin tài khoản</h2></span><button type="button" class="manage-account">Quản lý tài khoản <b>↗</b></button></div>
+                    <div class="summary-metrics"><div class="summary-metric"><span>Dung lượng lưu trữ</span><strong id="statStorage">—</strong><em>Dung lượng phân mảnh thực tế</em></div><div class="summary-metric"><span>Tệp được bảo vệ</span><strong id="statProtectedFiles">—</strong><em id="statProtectedLabel">Đang tải dữ liệu</em></div><div class="summary-metric"><span>Tệp đã khôi phục</span><strong id="statRestoredFiles">—</strong><em>Tác vụ khôi phục hoàn tất</em></div><div class="summary-metric"><span>Tác vụ đang xử lý</span><strong id="statActiveJobs">—</strong><em id="statJoinedAt">Ngày tham gia: —</em></div></div><section class="home-recent-activity" aria-label="Hoạt động gần đây"><div><strong>Hoạt động gần đây</strong><span id="homeActivityCount">0 hoạt động</span></div><div class="home-activity-list" id="homeActivityList"><p class="home-activity-empty">Chưa có dữ liệu hoạt động.</p></div></section>
+                </section><footer class="home-footer"><span>SentinelGate</span><i>•</i> Không gian riêng tư, được bảo vệ <span class="footer-lock">◆</span></footer>
+            </main>
+            <main class="vault-workspace tab-view hidden" id="vaultPage" data-home-tab="Kho dữ liệu" aria-label="Kho dữ liệu">
+                <header class="vault-page-heading">
+                    <div>
+                        <p class="history-eyebrow"><i></i> SENTINELGATE / KHO RIÊNG CỦA BẠN</p>
+                        <h1>Kho dữ liệu</h1>
+                        <p>Các tệp đã được bảo vệ trong tài khoản hiện tại.</p>
+                    </div>
+                    <button class="history-refresh" id="refreshVault" type="button"><span aria-hidden="true">↻</span> Làm mới</button>
+                </header>
+                <section class="history-panel vault-panel" aria-label="Các tệp đã bảo vệ">
+                    <div class="history-toolbar"><div><strong>Tệp đã bảo vệ</strong><span id="vaultCount">Đang tải…</span></div><span class="vault-account-scope">Tài khoản hiện tại</span></div>
+                    <div class="vault-list" id="vaultList" role="list" aria-live="polite">
+                        <div class="vault-state" role="status"><span class="history-spinner"></span><strong>Đang tải kho dữ liệu…</strong></div>
+                    </div>
+                </section>
+            </main>
+            <main class="history-workspace tab-view hidden" id="historyPage" data-home-tab="Lịch sử" aria-label="Lịch sử hoạt động">
+                <header class="history-page-heading">
+                    <div>
+                        <p class="history-eyebrow"><i></i> SENTINELGATE / TÀI KHOẢN CỦA BẠN</p>
+                        <h1>Lịch sử hoạt động</h1>
+                        <p>Theo dõi các tác vụ bảo vệ và khôi phục của tài khoản này.</p>
+                    </div>
+                    <button class="history-refresh" id="refreshHistory" type="button"><span aria-hidden="true">↻</span> Làm mới</button>
+                </header>
+                <section class="history-panel" aria-label="Danh sách tác vụ">
+                    <div class="history-toolbar">
+                        <div><strong>Hoạt động</strong><span id="historyCount">Đang tải…</span></div>
+                        <label class="history-filter-label" for="historyFilter">Loại thao tác
+                            <select id="historyFilter">
+                                <option value="all">Tất cả</option>
+                                <option value="protect">Bảo vệ</option>
+                                <option value="restore">Khôi phục</option>
+                            </select>
+                        </label>
+                    </div>
+                    <div class="history-list" id="historyList" role="list" aria-live="polite">
+                        <div class="history-state"><span class="history-spinner"></span><strong>Đang tải lịch sử…</strong></div>
+                    </div>
+                </section>
+                <dialog class="history-dialog" id="historyJobDialog" aria-labelledby="historyDialogTitle">
+                    <div class="history-dialog-heading"><div><p>CHI TIẾT TIẾN TRÌNH</p><h2 id="historyDialogTitle">Chi tiết tác vụ</h2></div><button class="history-dialog-close" id="closeHistoryDialog" type="button" aria-label="Đóng chi tiết">×</button></div>
+                    <div class="history-dialog-body" id="historyDialogBody"></div>
+                    <p class="history-dialog-feedback" id="historyDialogFeedback" role="status"></p>
+                    <div class="history-dialog-actions" id="historyDialogActions"></div>
+                </dialog>
+            </main>
+            <main class="settings-workspace tab-view hidden" id="settingsPage" data-home-tab="Cài đặt" aria-label="Cài đặt">
+                <header class="history-page-heading">
+                    <div>
+                        <p class="history-eyebrow"><i></i> SENTINELGATE / CÀI ĐẶT</p>
+                        <h1>Cài đặt</h1>
+                        <p>Tùy chỉnh giao diện, bảo mật tài khoản và dữ liệu cục bộ.</p>
+                    </div>
+                    <button class="history-refresh" id="refreshSettings" type="button"><span aria-hidden="true">↻</span> Kiểm tra lại</button>
+                </header>
+                <section class="settings-panel" aria-label="Giao diện &amp; chủ đề">
+                    <div class="history-toolbar"><div><strong>1 · Giao diện &amp; chủ đề</strong><span id="settingsAppearanceSummary">Mặc định</span></div><span class="vault-account-scope">Lưu cục bộ · áp dụng ngay</span></div>
+                    <div class="settings-body">
+                        <div class="settings-rows">
+                            <div class="settings-row">
+                                <div class="settings-row-copy"><strong>Chế độ tối</strong><small>SentinelGate chỉ có giao diện tối. Bật để dùng nền đen sâu (OLED) tiết kiệm pin hơn.</small></div>
+                                <button class="settings-switch" id="settingDarkMode" type="button" role="switch" aria-checked="false" data-setting="darkMode"><span class="settings-switch-track" aria-hidden="true"></span><span class="settings-switch-label">Mặc định</span></button>
+                            </div>
+                            <div class="settings-row">
+                                <div class="settings-row-copy"><strong>Màu nhấn phong cách neon / viễn tưởng công nghệ</strong><small>Đổi màu nhấn của giao diện Cài đặt và các điều khiển bên dưới.</small></div>
+                                <div class="settings-choices" data-setting="accent" role="radiogroup" aria-label="Điểm nhấn Neon">
+                                    <button type="button" role="radio" aria-checked="true" data-value="cyan" data-swatch="cyan" class="is-selected"><i aria-hidden="true"></i>Xanh lơ</button>
+                                    <button type="button" role="radio" aria-checked="false" data-value="magenta" data-swatch="magenta"><i aria-hidden="true"></i>Tím hồng</button>
+                                    <button type="button" role="radio" aria-checked="false" data-value="lime" data-swatch="lime"><i aria-hidden="true"></i>Xanh chanh</button>
+                                    <button type="button" role="radio" aria-checked="false" data-value="amber" data-swatch="amber"><i aria-hidden="true"></i>Hổ phách</button>
+                                </div>
+                            </div>
+                            <div class="settings-row">
+                                <div class="settings-row-copy"><strong>Cỡ chữ</strong><small>Áp dụng cho giao diện Cài đặt và được ghi nhớ cho lần mở sau.</small></div>
+                                <div class="settings-choices" data-setting="fontSize" role="radiogroup" aria-label="Cỡ chữ">
+                                    <button type="button" role="radio" aria-checked="false" data-value="small">Nhỏ</button>
+                                    <button type="button" role="radio" aria-checked="true" data-value="medium" class="is-selected">Vừa</button>
+                                    <button type="button" role="radio" aria-checked="false" data-value="large">Lớn</button>
+                                </div>
+                            </div>
+                            <div class="settings-row">
+                                <div class="settings-row-copy"><strong>Hiệu ứng mờ / trong suốt</strong><small>Giảm độ mờ của thanh điều hướng và hộp thoại để nhẹ máy hơn trên cấu hình yếu.</small></div>
+                                <button class="settings-switch" id="settingEffects" type="button" role="switch" aria-checked="false" data-setting="effects"><span class="settings-switch-track" aria-hidden="true"></span><span class="settings-switch-label">Đầy đủ</span></button>
+                            </div>
+                            <div class="settings-row settings-background-row">
+                                <div class="settings-row-copy"><strong>CÁ NHÂN HÓA NỀN</strong><small>Chọn ảnh hoặc video làm nền cho ứng dụng trên thiết bị này.</small></div>
+                                <div class="settings-actions settings-background-actions">
+                                    <button class="settings-action" id="chooseBackgroundImage" type="button">Chọn ảnh</button>
+                                    <button class="settings-action" id="chooseBackgroundVideo" type="button">Chọn video</button>
+                                    <button class="settings-action" id="clearCustomBackground" type="button">Xóa nền tùy chỉnh</button>
+                                    <input class="settings-import-input" id="backgroundImageInput" type="file" accept="image/png,image/jpeg,image/webp,image/gif,.png,.jpg,.jpeg,.webp,.gif" aria-hidden="true" tabindex="-1">
+                                    <input class="settings-import-input" id="backgroundVideoInput" type="file" accept="video/mp4,video/webm,video/ogg,.mp4,.webm,.ogv,.ogg" aria-hidden="true" tabindex="-1">
+                                </div>
+                            </div>
+                        </div>
+                        <p class="settings-feedback" id="settingsAppearanceFeedback" role="status" aria-live="polite"></p>
+                    </div>
+                </section>
+                <section class="settings-panel" aria-label="Tài khoản &amp; bảo mật">
+                    <div class="history-toolbar"><div><strong>2 · Tài khoản &amp; bảo mật</strong><span id="settingsAccountScope">Đang tải…</span></div><span class="vault-account-scope">Phiên đăng nhập hiện tại</span></div>
+                    <div class="settings-body">
+                        <div class="settings-account">
+                            <span class="settings-avatar" id="settingsAvatar" aria-hidden="true">SG</span>
+                            <div class="settings-account-copy">
+                                <strong id="settingsUsername">Đang tải…</strong>
+                                <span id="settingsEmail">—</span>
+                                <small id="settingsJoined">—</small>
+                            </div>
+                        </div>
+                        <dl class="settings-facts">
+                            <div><dt>ID tài khoản</dt><dd id="settingsUserId">—</dd></div>
+                            <div><dt>Trạng thái phiên</dt><dd id="settingsSessionStatus">Đang kiểm tra…</dd></div>
+                            <div><dt>Token phiên</dt><dd id="settingsSessionToken">—</dd></div>
+                            <div><dt>Phiên hết hạn</dt><dd id="settingsSessionExpiry">—</dd></div>
+                        </dl>
+                        <div class="settings-rows">
+                            <div class="settings-row is-unavailable">
+                                <div class="settings-row-copy"><strong>Đổi mật khẩu</strong><small>Máy chủ hiện chỉ có /api/auth/register, /api/auth/login và /api/auth/session, chưa có điểm cuối đổi mật khẩu nên chức năng này chưa khả dụng.</small></div>
+                                <span class="settings-badge">Chưa khả dụng</span>
+                            </div>
+                            <div class="settings-row is-unavailable">
+                                <div class="settings-row-copy"><strong>Xác thực hai lớp (OTP / 2FA)</strong><small>Máy chủ chưa cung cấp API OTP hay 2FA. Luồng OTP ở màn hình quên mật khẩu chỉ là giao diện và không gọi API.</small></div>
+                                <span class="settings-badge">Chưa khả dụng</span>
+                            </div>
+                        </div>
+                        <div class="settings-session-body">
+                            <p class="settings-note">Đăng xuất xóa token đang lưu trên thiết bị này và đưa bạn về màn hình đăng nhập. Các tệp đã bảo vệ trên máy chủ không bị ảnh hưởng.</p>
+                            <button class="settings-logout" id="settingsLogout" type="button">Đăng xuất</button>
+                        </div>
+                    </div>
+                </section>
+                <section class="settings-panel" aria-label="Hệ thống &amp; khởi động">
+                    <div class="history-toolbar"><div><strong>3 · Hệ thống &amp; khởi động</strong><span id="settingsServiceChecked">Chưa kiểm tra</span></div><span class="vault-account-scope">API trạng thái và phiên đăng nhập</span></div>
+                    <div class="settings-body">
+                        <div class="settings-status-list">
+                            <div class="settings-status-row" id="settingsBackendRow" data-state="pending">
+                                <span class="settings-status-dot" aria-hidden="true"></span>
+                                <div><strong>Máy chủ / API</strong><small id="settingsBackendDetail">Đang kiểm tra…</small></div>
+                                <span class="settings-status-pill" id="settingsBackendPill">Đang kiểm tra</span>
+                            </div>
+                            <div class="settings-status-row" id="settingsCoreRow" data-state="pending">
+                                <span class="settings-status-dot" aria-hidden="true"></span>
+                                <div><strong>Lõi C++</strong><small id="settingsCoreDetail">Đang kiểm tra…</small></div>
+                                <span class="settings-status-pill" id="settingsCorePill">Đang kiểm tra</span>
+                            </div>
+                        </div>
+                        <div class="settings-rows">
+                            <div class="settings-row is-unavailable">
+                                <div class="settings-row-copy"><strong>Khởi chạy cùng hệ thống</strong><small>Giao diện chạy trong trình duyệt hoặc môi trường webview nên không thể đăng ký khởi động cùng hệ điều hành.</small></div>
+                                <span class="settings-badge">Không khả dụng</span>
+                            </div>
+                            <div class="settings-row is-unavailable">
+                                <div class="settings-row-copy"><strong>Thu nhỏ xuống khay hệ thống</strong><small>Cần tiến trình desktop có API khay hệ thống. Phiên bản HTML/CSS/JS hiện tại không có quyền này.</small></div>
+                                <span class="settings-badge">Không khả dụng</span>
+                            </div>
+                            <div class="settings-row is-unavailable">
+                                <div class="settings-row-copy"><strong>Phím tắt toàn cục</strong><small>Trang web không thể đăng ký phím tắt toàn cục; chỉ có thể dùng phím tắt trong ứng dụng khi cửa sổ đang mở.</small></div>
+                                <span class="settings-badge">Không khả dụng</span>
+                            </div>
+                        </div>
+                        <dl class="settings-facts">
+                            <div><dt>Phiên bản ứng dụng</dt><dd id="settingsVersion">—</dd></div>
+                            <div><dt>Hệ thống API</dt><dd id="settingsApiSystem">—</dd></div>
+                            <div><dt>Lần kiểm tra gần nhất</dt><dd id="settingsCheckedAt">—</dd></div>
+                        </dl>
+                    </div>
+                </section>
+                <section class="settings-panel" aria-label="Lưu trữ &amp; dữ liệu">
+                    <div class="history-toolbar"><div><strong>4 · Lưu trữ &amp; dữ liệu</strong><span id="settingsStorageCount">Đang tính…</span></div><span class="vault-account-scope">localStorage trên thiết bị</span></div>
+                    <div class="settings-body">
+                        <dl class="settings-facts">
+                            <div><dt>Dung lượng lưu cục bộ</dt><dd id="settingsStorageUsage">—</dd></div>
+                        </dl>
+                        <div class="settings-storage-bar" role="presentation"><i id="settingsStorageFill" style="width: 4%"></i></div>
+                        <p class="settings-note">Dữ liệu tạm là các khóa localStorage không thuộc phiên đăng nhập và không thuộc tệp cài đặt này. Xóa dữ liệu tạm không đăng xuất bạn.</p>
+                        <div class="settings-actions">
+                            <button class="settings-action is-danger" id="clearSettingsData" type="button">Xóa bộ nhớ đệm và dữ liệu tạm</button>
+                            <button class="settings-action" id="resetSettingsPrefs" type="button">Đặt lại cài đặt</button>
+                            <button class="settings-action" id="exportSettings" type="button">Xuất cài đặt (.json)</button>
+                            <button class="settings-action" id="importSettings" type="button">Nhập cài đặt</button>
+                            <input class="settings-import-input" id="settingsImportInput" type="file" accept="application/json,.json" aria-hidden="true" tabindex="-1">
+                        </div>
+                        <p class="settings-feedback" id="settingsDataFeedback" role="status" aria-live="polite"></p>
+                    </div>
+                </section>
+                <p class="settings-feedback" id="settingsFeedback" role="status" aria-live="polite"></p>
+            </main>
+            <main class="about-workspace tab-view hidden" id="aboutPage" data-home-tab="Giới thiệu" aria-label="Giới thiệu">
+                <!-- About terminal tree. Each click splits only its selected terminal. -->
+                <div class="sgx-stage" id="aboutStage" role="group" aria-label="Không gian terminal SentinelGate"></div>
+            </main>
+
+            <main class="protection-workspace tab-view hidden" id="protectionPage" data-home-tab="Bảo vệ dữ liệu" aria-label="Bảo vệ dữ liệu">
+                <section class="protection-selection" id="protectionSelection">
+                    <div class="protection-page-heading"><div><p class="protection-eyebrow"><i></i> SENTINELGATE / <span id="protectionModeEyebrow">BẢO VỆ DỮ LIỆU</span></p><h1 id="protectionModeTitle">Không gian bảo vệ</h1><p id="protectionDescription">Kết hợp tệp của bạn với nhịp điệu bài nhạc để tạo cấu trúc phân mảnh riêng.</p></div><button class="mode-toggle" id="protectionModeToggle" type="button" aria-label="Chế độ Bảo vệ" aria-pressed="false"><span class="mode-toggle-icon" aria-hidden="true"><svg class="lock-icon lock-closed" viewBox="0 0 24 24"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/><path d="M12 14v3"/></svg><svg class="lock-icon lock-open" viewBox="0 0 24 24"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 7.2-2.4"/><path d="M12 14v3"/></svg></span><span class="mode-toggle-label" id="protectionModeLabel">Bảo vệ</span><span class="mode-toggle-arrows" aria-hidden="true">↔</span></button></div>
+                    <div class="protection-input-grid" id="protectInputGrid">
+                        <section class="protect-panel file-picker-panel" aria-labelledby="filePickerTitle">
+                            <div class="protect-panel-heading"><div><span class="protect-step-number">01</span><div><h2 id="filePickerTitle">Chọn tệp cần bảo vệ</h2><p>Chọn một hoặc nhiều tệp từ thiết bị</p></div></div><span class="selection-count" id="fileCount">0 tệp</span></div>
+                            <label class="file-dropzone" id="fileDropzone" for="protectFileInput">
+                                <input id="protectFileInput" type="file" multiple>
+                                <span class="upload-glyph"><svg viewBox="0 0 24 24"><path d="M12 16V4m0 0L7 9m5-5 5 5M4 15v4a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-4"/></svg></span>
+                                <strong>Kéo thả tệp vào đây</strong><span>hoặc <em>duyệt tệp</em> trên thiết bị</span><small>Chọn nhiều tệp · Không giới hạn định dạng</small>
+                            </label>
+                            <p class="file-picker-note"><span>◇</span> Tệp chỉ được gửi đi sau khi bạn bắt đầu bảo vệ.</p>
+                        </section>
+                        <section class="protect-panel music-panel" aria-labelledby="musicPickerTitle">
+                            <div class="protect-panel-heading"><div><span class="protect-step-number music-step-number">02</span><div><h2 id="musicPickerTitle">Chọn bài nhạc</h2><p>Nhịp điệu xác định số lượng phân mảnh</p></div></div><span class="music-core-badge"><i></i> CỐT LÕI</span></div>
+                            <form class="music-search" id="musicSearchForm" role="search"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m16 16 4.5 4.5"/></svg><input id="musicSearchInput" type="search" placeholder="Tìm tên bài hát hoặc nghệ sĩ..." autocomplete="off" aria-label="Tìm bài nhạc"><button type="submit" aria-label="Tìm kiếm">Tìm</button></form>
+                            <div class="music-search-status" id="musicSearchStatus" role="status">Tìm nhạc trên thư viện máy chủ để tiếp tục.</div>
+                            <div class="music-results-list" id="musicResults" role="listbox" aria-label="Kết quả tìm nhạc"></div>
+                            <div class="selected-song hidden" id="selectedSong" aria-live="polite"></div>
+                        </section>
+                    </div>
+                    <section class="protect-panel selected-files-panel" id="protectFilesPanel" aria-labelledby="selectedFilesTitle">
+                        <div class="protect-panel-heading selected-files-heading"><div><span class="selected-files-symbol"><svg viewBox="0 0 24 24"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v5h4M9 13h6M9 17h6"/></svg></span><div><h2 id="selectedFilesTitle">Tệp đã chọn</h2><p>Các tệp sẽ được xử lý sau khi nhấn bắt đầu</p></div></div><span class="total-file-size" id="totalFileSize">0 B tổng cộng</span></div>
+                        <div class="selected-file-list" id="selectedFileList" role="list" aria-live="polite"><div class="file-list-empty" id="fileListEmpty"><span>⌁</span><strong>Danh sách đang trống</strong><small>Thêm tệp ở khung phía trên để bắt đầu.</small></div></div>
+                    </section>
+                    <div class="protection-action-row" id="protectActionRow"><label class="protection-password-label" for="protectionPassword">Mật khẩu bảo vệ<input type="password" id="protectionPassword" autocomplete="new-password" required maxlength="4096" placeholder="Nhập mật khẩu dùng để khôi phục"></label><p class="protection-hint" id="protectionHint"><span>✦</span> Chọn ít nhất một tệp và một bài nhạc để tiếp tục.</p><button class="start-protection-button hidden" id="startProtectionButton" type="button"><span class="start-button-icon"><svg viewBox="0 0 24 24"><use href="#icon-shield-check"/></svg></span><span>Bắt đầu bảo vệ</span><b>↗</b></button></div>
+                    <section class="restore-workflow hidden" id="restoreWorkflow" aria-labelledby="restoreWorkflowTitle">
+                        <div class="restore-workflow-heading"><span class="restore-workflow-mark" aria-hidden="true">↶</span><div><h2 id="restoreWorkflowTitle">Chọn tệp cần giải mã</h2><p>Chọn một tệp đã được bảo vệ bằng tài khoản này.</p></div><button type="button" class="restore-refresh" id="refreshRestoreJobs">Làm mới danh sách</button></div>
+                        <div class="restore-jobs-list" id="restoreJobsList" role="listbox" aria-label="Các tệp đã được bảo vệ"></div>
+                        <div class="restore-action-row"><label class="protection-password-label" for="restorePassword">Mật khẩu giải mã<input type="password" id="restorePassword" autocomplete="current-password" maxlength="4096" placeholder="Nhập mật khẩu đã dùng khi bảo vệ"></label><p class="restore-selection-hint" id="restoreSelectionHint">Chọn tệp và nhập mật khẩu để tiếp tục.</p><button class="start-protection-button hidden" id="startRestoreButton" type="button"><span class="start-button-icon"><svg viewBox="0 0 24 24"><use href="#icon-shield-check"/></svg></span><span>Bắt đầu giải mã</span><b>↗</b></button></div>
+                    </section>
+                </section>
+                <section class="protection-processing hidden" id="protectionProcessing" aria-live="polite">
+                    <div class="processing-orbit"><span><svg viewBox="0 0 24 24"><use href="#icon-shield-check"/></svg></span></div>
+                    <p class="processing-kicker" id="processingKicker">SENTINELGATE · ĐANG BẢO VỆ</p>
+                    <div class="processing-percent" id="processingPercent">0<span>%</span></div>
+                    <h1 class="processing-title" id="processingTitle">Đang chuẩn bị</h1>
+                    <p class="processing-message" id="processingMessage">Đang chờ tiến trình bảo vệ...</p>
+                    <div class="processing-track" role="progressbar" aria-label="Tiến trình bảo vệ dữ liệu" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="processingTrack"><i id="processingTrackFill"></i></div>
+                    <div class="stage-set is-protect" aria-hidden="true"><span>Tệp đầu vào</span><span>Phân tích</span><span>Phân mảnh</span><span>Mã hóa</span><span>Lưu trữ</span></div>
+                    <div class="stage-set is-restore" aria-hidden="true"><span>Các mảnh</span><span>Xác thực</span><span>Giải mã</span><span>Ghép lại</span><span>Đã khôi phục</span></div>
+                    <div class="processing-details"><span id="processingFileName">Chưa có tệp</span><span id="processingFragmentCount">Đang chờ phân tích nhịp</span></div>
+                    <div class="processing-complete hidden" id="processingComplete"><h2>Bảo vệ hoàn tất</h2><p>Dữ liệu đã được bảo vệ thành công.</p></div>
+                    <div class="processing-error hidden" id="processingError" role="alert"><span aria-hidden="true">!</span><h2 id="processingErrorTitle">Không thể hoàn tất</h2><p id="processingErrorMessage"></p><button type="button" id="processingErrorBackButton">Quay lại thao tác</button></div>
+                    <button class="processing-home-button hidden" id="processingHomeButton" type="button">Về Trang chủ <span>→</span></button>
+                </section>
+                <div class="protection-toast hidden" id="protectionToast" role="alert"></div>
+            </main>
+            <aside class="dashboard-dock" aria-label="Điều hướng chính"><nav class="tool-navigation" aria-label="Điều hướng chính">
+                <button class="tool-nav-item is-current" type="button" aria-label="Trang chủ" data-nav-target="Trang chủ"><span class="tool-nav-icon"><svg viewBox="0 0 24 24"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1V10Z"/></svg></span><span class="tool-nav-label">Trang chủ</span></button>
+                <button class="tool-nav-item" type="button" aria-label="Bảo vệ dữ liệu" data-nav-target="Bảo vệ dữ liệu"><span class="tool-nav-icon tool-nav-brand"><img src="assets/sentinelgate-protect.png" alt=""></span><span class="tool-nav-label">Bảo vệ dữ liệu</span></button>
+                <button class="tool-nav-item" type="button" aria-label="Kho dữ liệu" data-nav-target="Kho dữ liệu"><span class="tool-nav-icon"><svg viewBox="0 0 24 24"><use href="#icon-vault"/></svg></span><span class="tool-nav-label">Kho dữ liệu</span></button>
+                <button class="tool-nav-item" type="button" aria-label="Lịch sử" data-nav-target="Lịch sử"><span class="tool-nav-icon"><svg viewBox="0 0 24 24"><use href="#icon-history"/></svg></span><span class="tool-nav-label">Lịch sử</span></button>
+                <button class="tool-nav-item" type="button" aria-label="Cài đặt" data-nav-target="Cài đặt"><span class="tool-nav-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="m19.4 15 .1.1 1.1.9-1.2 2.1-1.4-.5a7.7 7.7 0 0 1-1.5.9l-.3 1.5h-2.4l-.3-1.5a7.7 7.7 0 0 1-1.5-.9l-1.4.5-1.2-2.1 1.1-.9a7 7 0 0 1 0-1.8l-1.1-.9 1.2-2.1 1.4.5a7.7 7.7 0 0 1 1.5-.9l.3-1.5h2.4l.3 1.5a7.7 7.7 0 0 1 1.5.9l1.4-.5 1.2 2.1-1.1.9a7 7 0 0 1 0 1.7Z"/></svg></span><span class="tool-nav-label">Cài đặt</span></button>
+                <button class="tool-nav-item" type="button" aria-label="Giới thiệu" data-nav-target="Giới thiệu"><span class="tool-nav-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg></span><span class="tool-nav-label">Giới thiệu</span></button>
+            </nav></aside>
+        </section>
+
+    </main>
+
+    <script src="../config.js"></script>
+    <script src="js/api.js"></script>
+    <script src="app.js"></script>
+
+</body>
+</html>

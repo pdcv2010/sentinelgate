@@ -1,0 +1,65 @@
+#!/usr/bin/env bash
+set -euo pipefail
+ROOT="$(cd "$(dirname "$0")" && pwd)"
+OUT="$ROOT/release"
+WEB="$OUT/client-web"
+CLIENT="$OUT/SentinelGate_Client"
+CONFIGURED_SERVER_URL="$(sed -n 's/^window.SERVER_URL = "\([^"]*\)";$/\1/p' "$ROOT/config.js" | head -n 1)"
+SERVER_URL="${SERVER_URL:-$CONFIGURED_SERVER_URL}"
+
+if [[ ! "$SERVER_URL" =~ ^https://[A-Za-z0-9.-]+(:[0-9]{1,5})?$ ]] || [[ "$SERVER_URL" == *"<"* ]]; then
+  echo 'Set SERVER_URL to the HTTPS origin (without /api or a path), for example https://your-domain, before building.' >&2
+  exit 2
+fi
+if [[ "$(uname -s)" != MINGW* && "$(uname -s)" != MSYS* && "$(uname -s)" != CYGWIN* ]]; then
+  echo "Prepared source is in $ROOT/client-app and core source is in $ROOT/core/source. Sentinel.exe and sentinelgate.exe require the Windows workflow; this Linux build cannot create Windows executables." >&2
+  exit 2
+fi
+
+command -v g++ >/dev/null || { echo 'Install the x86_64 MinGW compiler and aubio/OpenSSL development packages.' >&2; exit 2; }
+command -v pkg-config >/dev/null || { echo 'pkg-config is required to link aubio and OpenSSL.' >&2; exit 2; }
+command -v cargo >/dev/null || { echo 'Install Rust and Tauri CLI build prerequisites.' >&2; exit 2; }
+command -v curl >/dev/null || { echo 'curl is required to fetch the WebView2 bootstrapper.' >&2; exit 2; }
+command -v zip >/dev/null || { echo 'zip is required to package the client ZIP.' >&2; exit 2; }
+
+rm -rf "$WEB" "$CLIENT"
+mkdir -p "$WEB" "$OUT/core-build/runtime"
+SERVER_URL="$SERVER_URL" node "$ROOT/scripts/build-gui.js" "$WEB"
+CORE="$OUT/core-build/sentinelgate.exe"
+g++ -std=c++17 -O2 "$ROOT/core/source/khkt.cpp" -o "$CORE" $(pkg-config --cflags --libs aubio openssl)
+
+while IFS= read -r dependency; do
+  [[ "$dependency" == /mingw* ]] && cp -f "$dependency" "$OUT/core-build/runtime/"
+done < <(ldd "$CORE" 2>/dev/null | awk '/=> \/mingw/ { print $3 }')
+curl --fail --location --silent --show-error 'https://go.microsoft.com/fwlink/p/?LinkId=2124703' -o "$OUT/core-build/runtime/MicrosoftEdgeWebview2Setup.exe"
+
+if [[ "${SKIP_NPM_CI:-0}" != "1" ]]; then
+  (cd "$ROOT/client-app" && npm ci --no-audit --no-fund)
+fi
+(cd "$ROOT/client-app" && npm run tauri -- build --no-bundle --target x86_64-pc-windows-msvc)
+LAUNCHER="$ROOT/client-app/src-tauri/target/x86_64-pc-windows-msvc/release/Sentinel.exe"
+test -f "$LAUNCHER" || { echo 'Tauri did not produce Sentinel.exe.' >&2; exit 1; }
+mkdir -p "$CLIENT/GUI" "$CLIENT/runtime"
+cp "$LAUNCHER" "$CLIENT/Sentinel.exe"
+cp "$CORE" "$CLIENT/sentinelgate.exe"
+cp "$WEB/config.js" "$CLIENT/config.js"
+cat > "$CLIENT/README.txt" <<'EOF'
+SentinelGate Windows Client
+
+Extract this folder, then double-click Sentinel.exe. A working Internet connection is required.
+The client connects to the HTTPS server configured in config.js. The default production URL is the one configured at build time.
+If Microsoft WebView2 Runtime is not already installed, Sentinel starts its bundled Microsoft bootstrapper; Internet is required for that setup.
+
+Keep Sentinel.exe, sentinelgate.exe, GUI, runtime, and config.js together in this folder.
+Do not place server software or database files in the client folder.
+EOF
+cp -R "$ROOT/GUI/index.html" "$ROOT/GUI/app.js" "$ROOT/GUI/style.css" "$ROOT/GUI/js" "$ROOT/GUI/assets" "$ROOT/GUI/font" "$CLIENT/GUI/"
+cp -R "$OUT/core-build/runtime/"* "$CLIENT/runtime/"
+mkdir -p "$CLIENT/runtime/licenses"
+cp "$ROOT/core/licenses/aubio-COPYING" "$CLIENT/runtime/licenses/aubio-COPYING"
+for license in /mingw64/share/licenses/openssl/LICENSE /mingw64/share/licenses/gcc-libs/COPYING3 /mingw64/share/licenses/gcc-libs/COPYING.RUNTIME; do
+  [[ -f "$license" ]] && cp "$license" "$CLIENT/runtime/licenses/"
+done
+rm -f "$OUT/SentinelGate_Client.zip"
+(cd "$OUT" && zip -qr SentinelGate_Client.zip SentinelGate_Client)
+echo "Windows client package: $OUT/SentinelGate_Client.zip"

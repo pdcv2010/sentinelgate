@@ -1,0 +1,25 @@
+[package]
+name = "sentinelgate-desktop"
+version = "1.0.0"
+description = "SentinelGate desktop client"
+authors = ["SentinelGate"]
+edition = "2021"
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+futures-util = "0.3"
+reqwest = { version = "0.12", default-features = false, features = ["blocking", "json", "rustls-tls", "stream"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tauri = { version = "2", features = ["config-toml"] }
+tauri-plugin-dialog = "2"
+tokio = { version = "1", features = ["fs", "io-util"] }
+tokio-util = { version = "0.7", features = ["io"] }
+uuid = { version = "1", features = ["v4"] }
+winreg = "0.55"
+
+[[bin]]
+name = "Sentinel"
+path = "src/main.rs"

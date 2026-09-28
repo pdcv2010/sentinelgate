@@ -1,0 +1,12 @@
+{
+  "name": "gui",
+  "version": "1.0.0",
+  "main": "app.js",
+  "scripts": {
+    "build": "node ../scripts/build-gui.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "Static SentinelGate desktop GUI"
+}

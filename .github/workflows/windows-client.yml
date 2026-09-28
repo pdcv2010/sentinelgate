@@ -1,0 +1,90 @@
+name: Build SentinelGate Windows client
+
+on:
+  workflow_dispatch:
+    inputs:
+      server_url:
+        description: Production HTTPS origin, without /api
+        required: true
+        default: https://stunning-yearly-chewy.ngrok-free.dev
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  windows-x64:
+    runs-on: windows-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Locate the production client project
+        id: locate
+        shell: pwsh
+        run: |
+          $root = "."
+          if (Test-Path (Join-Path $env:GITHUB_WORKSPACE "SentinelGate_FINAL/build-client")) {
+            $root = "SentinelGate_FINAL"
+          }
+          "project_root=$root" >> $env:GITHUB_OUTPUT
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: x86_64-pc-windows-msvc
+
+      - uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x64
+
+      - uses: msys2/setup-msys2@v2
+        with:
+          msystem: MINGW64
+          update: true
+          install: >-
+            mingw-w64-x86_64-gcc
+            mingw-w64-x86_64-aubio
+            mingw-w64-x86_64-openssl
+            mingw-w64-x86_64-pkgconf
+            zip
+
+      - name: Install pinned Tauri CLI dependencies with npm ci
+        shell: pwsh
+        run: |
+          $project = Join-Path $env:GITHUB_WORKSPACE "${{ steps.locate.outputs.project_root }}"
+          Push-Location (Join-Path $project "client-app")
+          npm ci --no-audit --no-fund
+          if ($LASTEXITCODE -ne 0) { throw "npm ci failed with exit code $LASTEXITCODE" }
+          Pop-Location
+
+      - name: Build C++ core, Tauri client, and portable ZIP
+        shell: msys2 {0}
+        env:
+          SERVER_URL: ${{ inputs.server_url }}
+          SKIP_NPM_CI: "1"
+          CARGO_TARGET_X86_64_PC_WINDOWS_MSVC_LINKER: link.exe
+        run: |
+          cd "$GITHUB_WORKSPACE/${{ steps.locate.outputs.project_root }}"
+          ./build-client
+
+      - name: Verify packaged app stays running through startup
+        shell: pwsh
+        run: |
+          $project = Join-Path $env:GITHUB_WORKSPACE "${{ steps.locate.outputs.project_root }}"
+          $appPath = Join-Path $project "release/SentinelGate_Client/Sentinel.exe"
+          if (-not (Test-Path $appPath)) { throw "Sentinel.exe was not packaged at $appPath" }
+          $app = Start-Process -FilePath $appPath -WorkingDirectory (Split-Path $appPath) -PassThru
+          Start-Sleep -Seconds 15
+          if ($app.HasExited) { throw "Sentinel.exe exited during startup" }
+          Stop-Process -Id $app.Id -Force
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: SentinelGate_Client_Windows_x64
+          path: ${{ steps.locate.outputs.project_root }}/release/SentinelGate_Client.zip
+          if-no-files-found: error
+          retention-days: 30
