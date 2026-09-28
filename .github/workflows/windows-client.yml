@@ -58,7 +58,10 @@ jobs:
         run: |
           $nodePath = (Get-Command node).Source
           $nodeHome = Split-Path -Parent $nodePath
+          $msvcLinker = (Get-Command link.exe -ErrorAction Stop).Source
+          $msvcLinkerHome = Split-Path -Parent $msvcLinker
           "node_home=$nodeHome" >> $env:GITHUB_OUTPUT
+          "msvc_linker_home=$msvcLinkerHome" >> $env:GITHUB_OUTPUT
           $project = Join-Path $env:GITHUB_WORKSPACE "${{ steps.locate.outputs.project_root }}"
           Push-Location (Join-Path $project "client-app")
           npm ci --no-audit --no-fund
@@ -70,6 +73,7 @@ jobs:
         env:
           SERVER_URL: ${{ inputs.server_url }}
           NODE_HOME: ${{ steps.npm-install.outputs.node_home }}
+          MSVC_LINKER_HOME: ${{ steps.npm-install.outputs.msvc_linker_home }}
           SKIP_NPM_CI: "1"
           CARGO_TARGET_X86_64_PC_WINDOWS_MSVC_LINKER: link.exe
         run: |
@@ -80,7 +84,9 @@ jobs:
             CARGO_HOME_POSIX="$HOME/.cargo"
           fi
           NODE_HOME_POSIX="$(cygpath -u "$NODE_HOME")"
-          export PATH="$NODE_HOME_POSIX:$CARGO_HOME_POSIX/bin:$PATH"
+          MSVC_LINKER_HOME_POSIX="$(cygpath -u "$MSVC_LINKER_HOME")"
+          export PATH="$MSVC_LINKER_HOME_POSIX:$NODE_HOME_POSIX:$CARGO_HOME_POSIX/bin:$PATH"
+          echo "MSVC linker: $(command -v link.exe)"
           command -v node
           node --version
           command -v cargo
