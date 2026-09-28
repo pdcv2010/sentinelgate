@@ -69,6 +69,14 @@ jobs:
           CARGO_TARGET_X86_64_PC_WINDOWS_MSVC_LINKER: link.exe
         run: |
           cd "$GITHUB_WORKSPACE/${{ steps.locate.outputs.project_root }}"
+          if [[ -n "${CARGO_HOME:-}" ]]; then
+            CARGO_HOME_POSIX="$(cygpath -u "$CARGO_HOME")"
+          else
+            CARGO_HOME_POSIX="$HOME/.cargo"
+          fi
+          export PATH="$CARGO_HOME_POSIX/bin:$PATH"
+          command -v cargo
+          cargo --version
           ./build-client
 
       - name: Verify packaged app stays running through startup
